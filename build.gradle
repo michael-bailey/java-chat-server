@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'eclipse'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+}
+
+group 'io.github.michael-bailey'
+version '1.0-SNAPSHOT'
+
+repositories {
+    jcenter()
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.guava:guava:28.1-jre'
+    compile group: 'javax.jmdns', name: 'jmdns', version: '3.4.1'
+    compile "org.openjfx:javafx-graphics:11.0.1:win"
+    compile "org.openjfx:javafx-graphics:11.0.1:linux"
+    compile "org.openjfx:javafx-graphics:11.0.1:mac"
+}
+
+application {
+    mainClassName "Main"
+}
+
+javafx {
+    version = "13"
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.base', 'javafx.graphics', 'javafx.media' ]
+}
+
+// defines other sources
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java"]
+        }
+        resources {
+            srcDirs = ["src/main/resources"]
+            includes = ["**/*.*"]
+        }
+    }
+}

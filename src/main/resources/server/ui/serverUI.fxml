@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Scene xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.ui.ServerUIController">
+    <AnchorPane minHeight="300.0" minWidth="200.0">
+        <Button fx:id="powerButton" minWidth="75.0" onAction="#serverToggle" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="8.0" />
+        <ListView fx:id="listView" layoutX="-8.0" layoutY="23.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0" />
+        <Label fx:id="serverStatusLabel" AnchorPane.bottomAnchor="12" AnchorPane.leftAnchor="8" />
+    </AnchorPane>
+
+</Scene>
