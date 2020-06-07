@@ -1,51 +1,52 @@
 package server.classes;
 
-
+import server.Protocol.Command;
 import server.delegates.IJavaServerDelegate;
-import server.ui.ServerUIModel;
+import server.delegates.JavaServerDelegate;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static server.enums.PROTOCOL_MESSAGES.*;
+import static server.Protocol.Command.*;
 
 public class JavaServer {
 
     private IJavaServerDelegate delegate;
-
 
     String name = "testserver";
     String owner = "michael-bailey";
 
     private final ArrayList<Worker> clientList = new ArrayList();
 
+
     private ServerSocket srvSock;
-    private ExecutorService threadPool;
+    private ExecutorService connectionThreadPool;
     private Boolean running = false;
 
     private Thread thread;
 
     public JavaServer() throws IOException {
-        thread = new Thread(() -> run());
-        threadPool = Executors.newCachedThreadPool();
-        srvSock = new ServerSocket(6000);
+        this.delegate = new JavaServerDelegate();
     }
 
     public JavaServer(IJavaServerDelegate delegate) throws IOException {
         this.delegate = delegate;
     }
 
+
+
     public boolean start() {
         try {
             srvSock = new ServerSocket(6000);
             thread = new Thread(() -> run());
-            threadPool = Executors.newCachedThreadPool();
+            connectionThreadPool = Executors.newCachedThreadPool();
+
 
             thread.start();
             running = true;
@@ -60,11 +61,11 @@ public class JavaServer {
         synchronized (this.running) {
             try {
                 this.srvSock.close();
-                this.threadPool.shutdownNow();
+                this.connectionThreadPool.shutdownNow();
                 this.thread.interrupt();
 
                 this.srvSock = null;
-                this.threadPool = null;
+                this.connectionThreadPool = null;
                 this.thread = null;
                 this.running = false;
             } catch (IOException e) {
@@ -74,26 +75,28 @@ public class JavaServer {
 
         }
         return true;
-
     }
 
-    public void run() {
+    public void run()  {
         while (running) {
-            try {
-                Socket connection = srvSock.accept();
 
+            try {
+                var connection = srvSock.accept();
                 DataInputStream in = new DataInputStream(connection.getInputStream());
                 DataOutputStream out = new DataOutputStream(connection.getOutputStream());
 
                 // decide if the connection will be kept or discarded
-                out.writeUTF("?request:");
+                out.writeUTF(new Command(REQUEST).toString());
                 out.flush();
 
-                String response = in.readUTF();
+                Command response = Command.valueOf(in.readUTF());
 
-                switch (response) {
+                switch (response.command) {
                     case INFO:
-                        out.writeUTF("!success: name:"+this.name+" owner:"+this.owner+"");
+                        var info = new HashMap<String, String>();
+                        info.put("name", this.name);
+                        info.put("owner", this.owner);
+                        out.writeUTF(new Command(SUCCESS, info).toString());
                         out.flush();
                         connection.close();
                         break;
@@ -101,23 +104,25 @@ public class JavaServer {
                     case CONNECT:
                         Worker worker = new Worker(connection);
                         this.clientList.add(worker);
-                        threadPool.execute(worker);
+                        connectionThreadPool.execute(worker);
 
                         for (Worker i : this.clientList) {
                             i.updateClientList(this.clientList);
                         }
                         break;
+
                     default:
                         System.out.println("client sent" + response);
                         connection.close();
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void updateClientList() {
-        delegate.updatedClientList(this.clientList);
+    public boolean isRunning() {
+        return running;
     }
 }
