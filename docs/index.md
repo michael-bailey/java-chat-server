@@ -1,5 +1,9 @@
 # Java Test Server
 
+![Build](https://github.com/michael-bailey/java-chat-server/workflows/Build/badge.svg)
+
+---
+
 this is a test server for the chat client that will allow easy unit testing of the java chat client
 
 this will documet the internal workings of the server.
@@ -64,5 +68,6 @@ this does have attached a ui that should allow viewing of server state but that 
 
   #Owners
   [michael-bailey](https://github.com/michael-bailey/)
+
   [mitch161](https://github.com/mitch161/)
 
