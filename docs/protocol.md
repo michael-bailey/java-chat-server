@@ -1,5 +1,7 @@
 # Protocol
 
+[Home](https://michael-bailey.github.io/java-chat-server)
+
 ---
 
 This protocol was created to easily debug connections.
@@ -100,22 +102,32 @@ This is sent by the client to get the info relating to another client.
 #### Examples
 
 ```
-
+Client: !clientInfo: uuid:654321-1234-1234-654321
+Server: !success: uuid:654321-1234-1234-654321 name:bob host:"127.0.0.1"
 ```
 
 ---
 
-!client:
+### !client:
 
-* host
-* uuid
-* name
+This is used by the server to signal the attached info is part of a client. it will expect a success message formt he client
 
-expects success after each 
+#### Parameters.
+
+* host - this is the hostname/ip of the client
+* name - the users name for the client
+* uuid- the uuid of the user
+
+expects success after each client sent.
+
+```
+Server: !client uuid:654321-1234-1234-654321 name:bob host:"127.0.0.1"
+Client: !success:
+```
 
 ---
 
-
+// todo Finish the rest.
 
 ## aux functions
 
@@ -124,4 +136,3 @@ expects success after each
 ### !info:
 
 !success: name:"billly bobs bill house" owner:"noreply@microsoft.com"
-
