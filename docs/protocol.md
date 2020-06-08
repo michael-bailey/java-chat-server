@@ -148,7 +148,7 @@ This is returned when an error occurs in the connection for example; an unknown 
 
 #### params
 
-theree are no parameters with this as many occurances of this mean the connection will be terminated **<possibly think about an error count>**
+theree are no parameters with this as many occurances of this mean the connection will be terminated *(possibly think about an error count)*
 
 #### Examples.
 
