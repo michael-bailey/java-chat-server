@@ -50,11 +50,12 @@ public class JavaServer {
 
             thread.start();
             running = true;
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        return true;
+
     }
 
     public boolean stop() {
