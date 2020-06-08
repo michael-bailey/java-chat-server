@@ -1,14 +1,12 @@
 # Protocol
 
-[Home](https://michael-bailey.github.io/java-chat-server)
-
----
+[Home Page](https://michael-bailey.github.io/java-chat-server)
 
 This protocol was created to easily debug connections.
 
----
 
-## Connections
+
+## Connection Commands.
 
 ---
 
@@ -32,21 +30,9 @@ No params
 
 ---
 
-## Return Messages
-
----
-
-!success:
-
----
-
-!error:
-
----
 
 
-
-## <u>Commands</u>
+## Connected Client Commands.
 
 These are the commands that are sent between the client and the server to coordinate info retrieval and connections.
 
@@ -68,9 +54,9 @@ The command itself has no parameters but other parts of the whole exchange do. (
 
 ```
 Client: !clientUpdate:
-Server: !client name:"alice" host:"255.255.255.255" uuid:"123456-1234-1234-123456"
+Server: !client: name:"alice" host:"255.255.255.255" uuid:"123456-1234-1234-123456"
 Client: !success:
-Server: !client name:"bob" host:"234.234.234.255" uuid:"654321-1234-1234-654321"
+Server: !client: name:"bob" host:"234.234.234.255" uuid:"654321-1234-1234-654321"
 Client: !success:
 Server: !success:
 Client: !success:
@@ -81,9 +67,9 @@ Client: !success:
 ```
 Server: !clientUpdate:
 Client: !Success:
-Server: !client name:"alice" host:"255.255.255.255" uuid:"123456-1234-1234-123456"
+Server: !client: name:"alice" host:"255.255.255.255" uuid:"123456-1234-1234-123456"
 Client: !success:
-Server: !client name:"bob" host:"234.234.234.255" uuid:"654321-1234-1234-654321"
+Server: !client: name:"bob" host:"234.234.234.255" uuid:"654321-1234-1234-654321"
 Client: !success:
 Server: !success:
 Client: !Success:
@@ -126,6 +112,59 @@ Client: !success:
 ```
 
 ---
+
+
+
+## Return Messages.
+
+---
+
+### !success:
+
+This is sent to confirm a message has been received pass data back to the sender as a form of return value or denotes that a message exchange has finished correctly
+
+#### Parameters.
+
+Paramters for this depends on the current exchange many of which don't require a return value.
+
+#### Examples.
+
+```
+# Client sending
+Server: !client: <params>
+Client: !success:
+
+# getting server Info.
+New-Connection: !info:
+Server: !success: name:exampleServer owner:"noreply@email.com"
+
+```
+
+---
+
+### !error:
+
+This is returned when an error occurs in the connection for example; an unknown command or broken connection.
+
+#### params
+
+theree are no parameters with this as many occurances of this mean the connection will be terminated **<possibly think about an error count>**
+
+#### Examples.
+
+```
+# getting info
+New-Connection: !data:
+Server: !error:
+
+# During receiving clients
+Server: !client: nane:"alice" host:"255.255.Aa45.255" uuId:"123456-1234-1234-123456"
+Client: !error:
+```
+
+---
+
+
 
 // todo Finish the rest.
 
