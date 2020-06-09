@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import server.classes.Worker;
 
 import java.io.IOException;
@@ -20,8 +21,9 @@ public class ServerUIController implements Initializable {
     private final URL listCellURL = getClass().getClassLoader().getResource("server/ui/WorkerListCell.fxml");
 
     @FXML public ListView<Worker> listView;
-    @FXML public Label serverStatusLabel;
+    @FXML private Label serverStatusLabel;
     @FXML private Button powerButton;
+    @FXML private TextArea logView;
 
     public ServerUIController() throws IOException {
     }
