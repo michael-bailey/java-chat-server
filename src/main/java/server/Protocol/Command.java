@@ -9,11 +9,10 @@ import java.util.regex.Pattern;
 
 public class Command {
 
-    public final static Pattern parser = Pattern.compile("([?!])([a-zA-z0-9]*):|([a-zA-z]*):([a-zA-Z0-9\\-+\\[\\]{}_=/]+|(\"(.*?)\")+)");
-
+    public final static Pattern parser = Pattern.compile("([?!][a-zA-z0-9]*:)|([a-zA-z]*:([a-zA-Z0-9\\-+\\[\\]{}_=]+|\".*?\")+)");
 
     public final static String REQUEST = "?request:";
-    public final static String INFO = "?info!";
+    public final static String INFO = "?info:";
     public final static String DETAILS = "?details:";
 
     // results
@@ -47,10 +46,13 @@ public class Command {
     }
 
     public static Command valueOf(String string) {
+        System.out.println("string = " + string);
         Matcher matcher = parser.matcher(string);
 
-        matcher.find();
+        System.out.println("matcher find = " + matcher.find());
+
         String command = matcher.group();
+        System.out.println("command = " + command);
 
         HashMap<String, String> params = new HashMap<>();
         while (matcher.find()) {
