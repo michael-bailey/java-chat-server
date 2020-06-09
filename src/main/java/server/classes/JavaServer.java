@@ -39,9 +39,8 @@ public class JavaServer {
         this.delegate = delegate;
     }
 
-
-
     public boolean start() {
+        delegate.serverWillStart();
         try {
             srvSock = new ServerSocket(6000);
             thread = new Thread(() -> run());
@@ -50,6 +49,7 @@ public class JavaServer {
 
             thread.start();
             running = true;
+            delegate.serverDidStart();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -59,6 +59,7 @@ public class JavaServer {
     }
 
     public boolean stop() {
+        delegate.serverWillStop();
         synchronized (this.running) {
             try {
                 this.srvSock.close();
@@ -69,13 +70,15 @@ public class JavaServer {
                 this.connectionThreadPool = null;
                 this.thread = null;
                 this.running = false;
+
+                delegate.serverDidStop();
+                return true;
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
             }
-
         }
-        return true;
+
     }
 
     public void run()  {
@@ -83,39 +86,6 @@ public class JavaServer {
 
             try {
                 var connection = srvSock.accept();
-                DataInputStream in = new DataInputStream(connection.getInputStream());
-                DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-
-                // decide if the connection will be kept or discarded
-                out.writeUTF(new Command(REQUEST).toString());
-                out.flush();
-
-                Command response = Command.valueOf(in.readUTF());
-
-                switch (response.command) {
-                    case INFO:
-                        var info = new HashMap<String, String>();
-                        info.put("name", this.name);
-                        info.put("owner", this.owner);
-                        out.writeUTF(new Command(SUCCESS, info).toString());
-                        out.flush();
-                        connection.close();
-                        break;
-
-                    case CONNECT:
-                        Worker worker = new Worker(connection);
-                        this.clientList.add(worker);
-                        connectionThreadPool.execute(worker);
-
-                        for (Worker i : this.clientList) {
-                            i.updateClientList(this.clientList);
-                        }
-                        break;
-
-                    default:
-                        System.out.println("client sent" + response);
-                        connection.close();
-                }
 
             } catch (IOException e) {
                 e.printStackTrace();
