@@ -1,8 +1,28 @@
 # Protocol
 
-[Home Page](https://michael-bailey.github.io/java-chat-server)
+This protocol is a text based protocol sent over a tcp connection 
 
-This protocol was created to easily debug connections.
+
+
+## Structure
+
+---
+
+All messages follow a simple structure of: a Command followed by, if applicable; multiple key-value parameters.
+
+this can be shown using a regular expression ot seperate a command into its components.
+
+the only thing that has to be set is the position of the command as it shoud be the first element in the string.
+
+```java
+String regex = "([?!][a-zA-z0-9]*:)|([a-zA-z]*:([a-zA-Z0-9\-+\[\]{}_=]+|\".*?\")+)";
+```
+
+[A Regex playgound link for this pattern](https://regex101.com/r/KPMh26/1)
+
+This does not define the keywords used for the protocol. These are explained below.
+
+---
 
 
 
@@ -12,21 +32,38 @@ This protocol was created to easily debug connections.
 
 ### !connect:
 
-this accepts any order
+this signals the server to create a new client that will be connected and other 
 
-|params|
+### Parameters
 
-uuid
+* uuid - this is the uuid of the user that is connecting.
+* name - the username of the connecting user.
+* host - the ip address of the connecting user *(possibly not needed)*
 
-username
+### Example
 
-address
+```
+Server: ?request:
+Client: !connect: uuid:123456-1234-1234-123456 name:"alice" host:"127.0.0.1"
+Server: !success:
+```
 
 ---
 
-!disconnect:
+### !disconnect:
 
-No params
+This signals th eserver to disconnect the server.
+
+### Parameters
+
+There are no parameters.
+
+### Example
+
+```
+Client: !disconnect:
+Server: !success:
+```
 
 ---
 
@@ -88,8 +125,8 @@ This is sent by the client to get the info relating to another client.
 #### Examples
 
 ```
-Client: !clientInfo: uuid:654321-1234-1234-654321
-Server: !success: uuid:654321-1234-1234-654321 name:bob host:"127.0.0.1"
+Client: !clientInfo: uuid:"654321-1234-1234-654321"
+Server: !success: uuid:"654321-1234-1234-654321" name:bob host:"127.0.0.1"
 ```
 
 ---
@@ -116,6 +153,8 @@ Client: !success:
 
 
 ## Return Messages.
+
+These are sent to signal the end of an exchange.
 
 ---
 
@@ -174,4 +213,19 @@ Client: !error:
 
 ### !info:
 
-!success: name:"billly bobs bill house" owner:"noreply@microsoft.com"
+this is sent to get the infomation about the server so the client can connect.
+
+### Parameter
+
+there are no parameters.
+
+### Example
+
+``` 
+New connection: ?info:
+Server: !success: name:"billly bobs bill house" owner:"noreply@microsoft.com"
+```
+
+---
+
+[Home Page](https://michael-bailey.github.io/java-chat-server)
