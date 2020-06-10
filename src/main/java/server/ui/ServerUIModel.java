@@ -24,7 +24,6 @@ public class ServerUIModel implements IJavaServerDelegate {
         this.statusText.set("Status: not running");
     }
 
-
     public void start() {
         this.server.start();
         this.running.set(true);
@@ -37,16 +36,51 @@ public class ServerUIModel implements IJavaServerDelegate {
         this.statusText.set("Status: not running");
     }
 
-    @Override
-    public void updatedClientList(ArrayList<Worker> clients) {
-        this.workers.setAll(clients);
-    }
-
     public boolean isRunning() {
         return running.get();
     }
 
     public SimpleStringProperty statusTextProperty() {
         return statusText;
+    }
+
+    @Override
+    public void serverWillStart() {
+
+    }
+
+    @Override
+    public void serverDidStart() {
+
+    }
+
+    @Override
+    public void serverWillStop() {
+
+    }
+
+    @Override
+    public void serverDidStop() {
+
+    }
+
+    @Override
+    public void clientWillConnect() {
+
+    }
+
+    @Override
+    public void clientDidConnect() {
+
+    }
+
+    @Override
+    public void clientWillDisconnect() {
+
+    }
+
+    @Override
+    public void clientDidDisconnect() {
+
     }
 }
