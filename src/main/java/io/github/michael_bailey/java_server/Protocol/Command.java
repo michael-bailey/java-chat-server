@@ -46,13 +46,8 @@ public class Command {
     }
 
     public static Command valueOf(String string) {
-        System.out.println("string = " + string);
         Matcher matcher = parser.matcher(string);
-
-        System.out.println("matcher find = " + matcher.find());
-
         String command = matcher.group();
-        System.out.println("command = " + command);
 
         HashMap<String, String> params = new HashMap<>();
         while (matcher.find()) {
