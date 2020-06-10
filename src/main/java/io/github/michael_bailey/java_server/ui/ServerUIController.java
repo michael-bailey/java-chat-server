@@ -42,6 +42,7 @@ public class ServerUIController implements Initializable {
         });
         this.powerButton.setText("Start");
         this.serverStatusLabel.textProperty().bind(model.statusText);
+        this.listView.itemsProperty().bind(this.model.workersProperty());
     }
 
     @FXML

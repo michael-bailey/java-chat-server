@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import io.github.michael_bailey.java_server.classes.JavaServer;
 import io.github.michael_bailey.java_server.classes.Worker;
 import io.github.michael_bailey.java_server.delegates.IJavaServerDelegate;
+import javafx.collections.ObservableList;
 
 import java.io.IOException;
 
@@ -26,7 +27,7 @@ public class ServerUIModel implements IJavaServerDelegate {
     public void start() {
         this.server.start();
         this.running.set(true);
-        this.statusText.set("Status: Runnning");
+        this.statusText.set("Status: Running");
     }
 
     public void stop() {
@@ -41,6 +42,10 @@ public class ServerUIModel implements IJavaServerDelegate {
 
     public SimpleStringProperty statusTextProperty() {
         return statusText;
+    }
+
+    public SimpleListProperty<Worker> workersProperty() {
+        return workers;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class ServerUIModel implements IJavaServerDelegate {
 
     @Override
     public void clientDidConnect() {
-
+        this.workers.setAll(this.server.getWorkers());
     }
 
     @Override
