@@ -8,7 +8,7 @@ plugins {
 }
 
 group 'io.github.michael-bailey'
-version '1.0.2'
+version '1.0.8'
 
 repositories {
     jcenter()
@@ -29,7 +29,7 @@ dependencies {
 }
 
 application {
-    mainClassName "Main"
+    mainClassName "io.github.michael_bailey.java_server.Main"
 }
 
 javafx {

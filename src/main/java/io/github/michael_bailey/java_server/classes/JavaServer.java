@@ -1,13 +1,20 @@
 package io.github.michael_bailey.java_server.classes;
 
+import io.github.michael_bailey.java_server.Protocol.Command;
 import io.github.michael_bailey.java_server.delegates.IJavaServerDelegate;
 import io.github.michael_bailey.java_server.delegates.JavaServerDelegate;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.ArrayList;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static io.github.michael_bailey.java_server.Protocol.Command.*;
 
 public class JavaServer {
 
@@ -16,11 +23,13 @@ public class JavaServer {
     String name = "testserver";
     String owner = "michael-bailey";
 
-    private final ArrayList<Worker> clientList = new ArrayList();
+    private final HashMap<UUID, Worker> clientMap = new HashMap<>();
 
 
     private ServerSocket srvSock;
     private ExecutorService connectionThreadPool;
+    private ExecutorService tmpConnectionPool;
+
     private Boolean running = false;
 
     private Thread thread;
@@ -39,7 +48,7 @@ public class JavaServer {
             srvSock = new ServerSocket(6000);
             thread = new Thread(() -> run());
             connectionThreadPool = Executors.newCachedThreadPool();
-
+            tmpConnectionPool = Executors.newFixedThreadPool(16);
 
             thread.start();
             running = true;
@@ -58,10 +67,12 @@ public class JavaServer {
             try {
                 this.srvSock.close();
                 this.connectionThreadPool.shutdownNow();
+                this.tmpConnectionPool.shutdownNow();
                 this.thread.interrupt();
 
                 this.srvSock = null;
                 this.connectionThreadPool = null;
+                this.tmpConnectionPool = null;
                 this.thread = null;
                 this.running = false;
 
@@ -77,13 +88,46 @@ public class JavaServer {
 
     public void run()  {
         while (running) {
-
             try {
                 var connection = srvSock.accept();
-
+                tmpConnectionPool.execute(() -> newConnectionHandler(connection));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void newConnectionHandler(Socket connection) {
+        try {
+            var in = new DataInputStream(connection.getInputStream());
+            var out = new DataOutputStream(connection.getOutputStream());
+
+            out.writeUTF(new Command(REQUEST).toString());
+
+            var command = Command.valueOf(in.readUTF());
+
+            switch (command.command) {
+                case INFO:
+                    var params = new HashMap<String, String>();
+                    params.put("owner", this.owner);
+                    params.put("name", this.name);
+                    System.out.println(new Command(SUCCESS, params).toString());
+                    out.writeUTF(new Command(SUCCESS, params).toString());
+                    break;
+
+                case CONNECT:
+                    var newWorker = new Worker(command.getParam("name"), command.getParam("uuid"), connection);
+                    this.clientMap.put(UUID.fromString(command.getParam("uuid")), newWorker);
+                    this.connectionThreadPool.execute(newWorker);
+                    break;
+
+                default:
+                    out.writeUTF(new Command(ERROR).toString());
+                    break;
+            }
+            connection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -10,7 +10,7 @@ import java.net.URL;
 
 public class ServerUIApplication extends Application {
 
-    URL fxml = getClass().getClassLoader().getResource("server/ui/serverUI.fxml");
+    URL fxml = getClass().getClassLoader().getResource("io/github/michael_bailey/java_server/ui/serverUI.fxml");
 
     ServerUIController controller;
 

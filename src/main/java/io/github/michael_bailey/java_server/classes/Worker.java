@@ -25,23 +25,16 @@ public class Worker implements Runnable {
     private String username = null;
     private String ipaddress = null;
 
-    public Worker(Socket connection) {
-        try {
-            connection = connection;
+    public Worker(String name, String uuid, Socket connection) {
+        this.connection = connection;
 
+        this.ipaddress = connection.getLocalAddress().getHostAddress();
+        this.username = name;
+        this.uuid = UUID.fromString(uuid);
+
+        try {
             in = new DataInputStream(connection.getInputStream());
             out = new DataOutputStream(connection.getOutputStream());
-
-            out.writeUTF(new Command(DETAILS).toString());
-            this.ipaddress = connection.getLocalAddress().getHostAddress();
-
-            Command command = Command.valueOf(in.readUTF());
-
-            if (command.command.equals(DETAILS)) {
-                this.username = command.getParam("username");
-                this.uuid = UUID.fromString(command.getParam("uuid"));
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

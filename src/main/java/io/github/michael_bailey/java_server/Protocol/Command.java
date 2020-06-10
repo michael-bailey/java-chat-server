@@ -67,12 +67,13 @@ public class Command {
 
     @Override
     public String toString() {
-        String paramString = new String();
+        var ref = new Object() {
+            String paramString = new String();
+        };
+
         if (params != null) {
-            params.forEach((key, value) -> {
-                paramString.concat(" " + key + ":" + value);
-            });
-            return command + paramString;
+            params.forEach((key, value) -> ref.paramString = ref.paramString.concat(" " + key + ":" + value));
+            return command + ref.paramString;
         } else {
             return command;
         }
