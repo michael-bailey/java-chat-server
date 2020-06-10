@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -92,7 +93,11 @@ public class JavaServer {
                 var connection = srvSock.accept();
                 tmpConnectionPool.execute(() -> newConnectionHandler(connection));
             } catch (IOException e) {
-                e.printStackTrace();
+                if (e instanceof SocketException) {
+                    System.out.println("socket closed");
+                } else {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -105,6 +110,7 @@ public class JavaServer {
             out.writeUTF(new Command(REQUEST).toString());
 
             var command = Command.valueOf(in.readUTF());
+            System.out.println("command = " + command.toString());
 
             switch (command.command) {
                 case INFO:
@@ -116,9 +122,11 @@ public class JavaServer {
                     break;
 
                 case CONNECT:
+                    delegate.clientWillConnect();
                     var newWorker = new Worker(command.getParam("name"), command.getParam("uuid"), connection);
                     this.clientMap.put(UUID.fromString(command.getParam("uuid")), newWorker);
                     this.connectionThreadPool.execute(newWorker);
+                    delegate.clientDidConnect();
                     break;
 
                 default:
@@ -129,6 +137,10 @@ public class JavaServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Worker[] getWorkers() {
+       return (Worker[]) this.clientMap.values().toArray();
     }
 
     public boolean isRunning() {
