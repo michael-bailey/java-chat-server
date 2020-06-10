@@ -1,9 +1,4 @@
-package server.delegates;
-
-import server.classes.Worker;
-
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+package io.github.michael_bailey.java_server.delegates;
 
 public class JavaServerDelegate implements IJavaServerDelegate {
     @Override

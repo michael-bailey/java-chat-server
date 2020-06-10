@@ -1,4 +1,4 @@
-package server.classes;
+package io.github.michael_bailey.java_server.classes;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

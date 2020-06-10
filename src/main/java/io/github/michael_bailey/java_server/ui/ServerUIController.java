@@ -1,4 +1,4 @@
-package server.ui;
+package io.github.michael_bailey.java_server.ui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import server.classes.Worker;
+import io.github.michael_bailey.java_server.classes.Worker;
 
 import java.io.IOException;
 import java.net.URL;

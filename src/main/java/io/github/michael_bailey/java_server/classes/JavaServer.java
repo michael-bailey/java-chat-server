@@ -1,19 +1,13 @@
-package server.classes;
+package io.github.michael_bailey.java_server.classes;
 
-import server.Protocol.Command;
-import server.delegates.IJavaServerDelegate;
-import server.delegates.JavaServerDelegate;
+import io.github.michael_bailey.java_server.delegates.IJavaServerDelegate;
+import io.github.michael_bailey.java_server.delegates.JavaServerDelegate;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static server.Protocol.Command.*;
 
 public class JavaServer {
 

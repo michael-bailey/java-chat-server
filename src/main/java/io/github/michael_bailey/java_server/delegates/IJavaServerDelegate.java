@@ -1,8 +1,4 @@
-package server.delegates;
-
-import server.classes.Worker;
-
-import java.util.ArrayList;
+package io.github.michael_bailey.java_server.delegates;
 
 public interface IJavaServerDelegate {
     void serverWillStart();

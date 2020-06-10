@@ -1,4 +1,4 @@
-package server.Protocol;
+package io.github.michael_bailey.java_server.Protocol;
 
 import java.util.HashMap;
 import java.util.function.BiConsumer;

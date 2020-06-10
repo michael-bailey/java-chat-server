@@ -1,14 +1,13 @@
-package server.ui;
+package io.github.michael_bailey.java_server.ui;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
-import server.classes.JavaServer;
-import server.classes.Worker;
-import server.delegates.IJavaServerDelegate;
+import io.github.michael_bailey.java_server.classes.JavaServer;
+import io.github.michael_bailey.java_server.classes.Worker;
+import io.github.michael_bailey.java_server.delegates.IJavaServerDelegate;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class ServerUIModel implements IJavaServerDelegate {
 

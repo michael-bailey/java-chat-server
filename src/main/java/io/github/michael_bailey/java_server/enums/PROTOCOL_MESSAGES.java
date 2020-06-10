@@ -1,4 +1,4 @@
-package server.enums;
+package io.github.michael_bailey.java_server.enums;
 
 public class PROTOCOL_MESSAGES {
     public final static String REQUEST = "?request:";

@@ -1,13 +1,9 @@
-package server.ui;
+package io.github.michael_bailey.java_server.ui;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import server.classes.Worker;
-
-import java.io.IOException;
-import java.net.URL;
+import io.github.michael_bailey.java_server.classes.Worker;
 
 public class WorkerListCell extends ListCell<Worker> {
 

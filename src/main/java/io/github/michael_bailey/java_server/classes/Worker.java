@@ -1,7 +1,7 @@
-package server.classes;
+package io.github.michael_bailey.java_server.classes;
 
-import server.Protocol.Command;
-import static server.Protocol.Command.*;
+import io.github.michael_bailey.java_server.Protocol.Command;
+import static io.github.michael_bailey.java_server.Protocol.Command.*;
 
 import java.util.*;
 

@@ -1,10 +1,9 @@
-package server;
+package io.github.michael_bailey.java_server;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import server.ui.ServerUIController;
+import io.github.michael_bailey.java_server.ui.ServerUIController;
 
 import java.io.IOException;
 import java.net.URL;
