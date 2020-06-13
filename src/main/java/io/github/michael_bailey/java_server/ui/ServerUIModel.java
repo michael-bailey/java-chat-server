@@ -27,15 +27,19 @@ public class ServerUIModel implements IJavaServerDelegate {
     }
 
     public void start() {
-        this.server.start();
-        this.running.set(true);
-        this.statusText.set("Status: Running");
+        if (!running.get()) {
+            this.server.start();
+            this.running.set(true);
+            this.statusText.set("Status: Running");
+        }
     }
 
     public void stop() {
-        this.server.stop();
-        this.running.set(false);
-        this.statusText.set("Status: not running");
+        if (running.get()) {
+            this.server.stop();
+            this.running.set(false);
+            this.statusText.set("Status: not running");
+        }
     }
 
     public boolean isRunning() {
