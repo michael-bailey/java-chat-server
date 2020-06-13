@@ -17,11 +17,16 @@ public class WorkerListCell extends ListCell<Worker> {
     protected void updateItem(Worker item, boolean empty) {
         super.updateItem(item, empty);
 
-        if (item == null) {
-            this.setText("Error NullPointer");
-            this.setGraphic(null);
-        }
+        this.setText(null);
+        this.setGraphic(null);
 
-        this.setGraphic(root);
+        if (item == null) {
+            this.setText(null);
+            this.setGraphic(null);
+        } else {
+            this.usernameLabel.textProperty().setValue(item.getUsername());
+            this.uuidLabel.textProperty().setValue(item.getUUID().toString());
+            this.setGraphic(root);
+        }
     }
 }

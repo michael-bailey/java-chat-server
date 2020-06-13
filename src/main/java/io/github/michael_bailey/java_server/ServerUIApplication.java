@@ -1,6 +1,7 @@
 package io.github.michael_bailey.java_server;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import io.github.michael_bailey.java_server.ui.ServerUIController;
@@ -29,5 +30,9 @@ public class ServerUIApplication extends Application {
         stage.show();
 
         this.controller = fxmlLoader.getController();
+        stage.setOnCloseRequest(event -> {
+            this.controller.stopProgram();
+            Platform.exit();
+        });
     }
 }

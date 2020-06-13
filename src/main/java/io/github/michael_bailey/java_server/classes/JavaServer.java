@@ -2,6 +2,7 @@ package io.github.michael_bailey.java_server.classes;
 
 import io.github.michael_bailey.java_server.Protocol.Command;
 import io.github.michael_bailey.java_server.delegates.IJavaServerDelegate;
+import io.github.michael_bailey.java_server.delegates.IWorkerDelegate;
 import io.github.michael_bailey.java_server.delegates.JavaServerDelegate;
 
 import java.io.DataInputStream;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +19,7 @@ import java.util.concurrent.Executors;
 
 import static io.github.michael_bailey.java_server.Protocol.Command.*;
 
-public class JavaServer {
+public class JavaServer implements IWorkerDelegate {
 
     private IJavaServerDelegate delegate;
 
@@ -91,7 +93,7 @@ public class JavaServer {
         while (running) {
             try {
                 var connection = srvSock.accept();
-                tmpConnectionPool.execute(() -> newConnectionHandler(connection));
+                connectionThreadPool.execute(() -> new Worker(connection, this));
             } catch (IOException e) {
                 if (e instanceof SocketException) {
                     System.out.println("socket closed");
@@ -102,48 +104,54 @@ public class JavaServer {
         }
     }
 
-    private void newConnectionHandler(Socket connection) {
+    private void updateAllClients() {
+        this.clientMap.forEach((key, value) -> {
+            value.updateClientList(this.getWorkers());
+        });
+    }
+
+    public Worker[] getWorkers() {
+        var workers = new Worker[this.clientMap.size()];
+        this.clientMap.values().toArray(workers);
+        return workers;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    @Override
+    public void clientDidConnect(Worker sender) {
+        System.out.println("server: Client Connected");
+        this.clientMap.put(sender.getUUID(), sender);
+        this.connectionThreadPool.execute(sender);
+        this.updateAllClients();
+        delegate.clientDidConnect();
+    }
+
+    @Override
+    public void clientDidDisconnect(Worker sender) {
+        System.out.println("server: Client disconnected");
+        this.clientMap.remove(sender.getUUID());
+        this.updateAllClients();
+        delegate.clientDidDisconnect();
+    }
+
+    @Override
+    public void clientWillRequestInfo(Worker sender) {
+        var params = new HashMap<String, String>();
+        params.put("owner", this.owner);
+        params.put("name", this.name);
         try {
-            var in = new DataInputStream(connection.getInputStream());
-            var out = new DataOutputStream(connection.getOutputStream());
-
-            out.writeUTF(new Command(REQUEST).toString());
-
-            var command = Command.valueOf(in.readUTF());
-            System.out.println("command = " + command.toString());
-
-            switch (command.command) {
-                case INFO:
-                    var params = new HashMap<String, String>();
-                    params.put("owner", this.owner);
-                    params.put("name", this.name);
-                    System.out.println(new Command(SUCCESS, params).toString());
-                    out.writeUTF(new Command(SUCCESS, params).toString());
-                    break;
-
-                case CONNECT:
-                    delegate.clientWillConnect();
-                    var newWorker = new Worker(command.getParam("name"), command.getParam("uuid"), connection);
-                    this.clientMap.put(UUID.fromString(command.getParam("uuid")), newWorker);
-                    this.connectionThreadPool.execute(newWorker);
-                    delegate.clientDidConnect();
-                    break;
-
-                default:
-                    out.writeUTF(new Command(ERROR).toString());
-                    break;
-            }
-            connection.close();
+            sender.out.writeUTF(new Command(SUCCESS, params).toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public Worker[] getWorkers() {
-       return (Worker[]) this.clientMap.values().toArray();
-    }
 
-    public boolean isRunning() {
-        return running;
+    @Override
+    public void requestUpdateClients(Worker sender) {
+        sender.updateClientList(this.getWorkers());
     }
 }

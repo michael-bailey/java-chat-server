@@ -1,15 +1,15 @@
 package io.github.michael_bailey.java_server.delegates;
 
 public interface IJavaServerDelegate {
-    void serverWillStart();
-    void serverDidStart();
+    default void serverWillStart() {}
+    default void serverDidStart() {}
 
-    void serverWillStop();
-    void serverDidStop();
+    default void serverWillStop() {}
+    default void serverDidStop() {}
 
-    void clientWillConnect();
-    void clientDidConnect();
+    default void clientWillConnect() {}
+    default void clientDidConnect() {}
 
-    void clientWillDisconnect();
-    void clientDidDisconnect();
+    default void clientWillDisconnect() {}
+    default void clientDidDisconnect() {}
 }

@@ -18,7 +18,7 @@ public class ServerUIController implements Initializable {
 
     private final ServerUIModel model = new ServerUIModel();
 
-    private final URL listCellURL = getClass().getClassLoader().getResource("server/ui/WorkerListCell.fxml");
+    private final URL listCellURL = getClass().getClassLoader().getResource("io/github/michael_bailey/java_server/ui/WorkerListCell.fxml");
 
     @FXML public ListView<Worker> listView;
     @FXML private Label serverStatusLabel;
@@ -42,7 +42,7 @@ public class ServerUIController implements Initializable {
         });
         this.powerButton.setText("Start");
         this.serverStatusLabel.textProperty().bind(model.statusText);
-        this.listView.itemsProperty().bind(this.model.workersProperty());
+        this.listView.itemsProperty().bindBidirectional(this.model.workersProperty());
     }
 
     @FXML
