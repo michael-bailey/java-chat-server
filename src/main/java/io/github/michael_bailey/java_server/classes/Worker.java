@@ -97,14 +97,29 @@ public class Worker implements Runnable {
                         // update the clients contacts
                         case UPDATE_CLIENTS:
                             System.out.println("updating clients");
+                            out.writeUTF(command.toString());
+                            if (!valueOf(in.readUTF()).command.equals(SUCCESS)) {
+                                sendQueue.clear();
+                                out.writeUTF(new Command(ERROR).toString());
+                            }
                             break;
 
                         case CLIENT:
                             System.out.println("worker {"+uuid+"}: sending a client");
+                            out.writeUTF(command.toString());
+                            if (!valueOf(in.readUTF()).command.equals(SUCCESS)) {
+                                sendQueue.clear();
+                                out.writeUTF(new Command(ERROR).toString());
+                            }
                             break;
 
                         case SUCCESS:
                             System.out.println("worker {"+uuid+"}: sending success");
+                            out.writeUTF(command.toString());
+                            if (!valueOf(in.readUTF()).command.equals(SUCCESS)) {
+                                sendQueue.clear();
+                                out.writeUTF(new Command(ERROR).toString());
+                            }
                             break;
 
                         // tell the client to disconnect
