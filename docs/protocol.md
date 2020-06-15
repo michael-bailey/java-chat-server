@@ -69,47 +69,29 @@ Server: !success:
 
 
 
-## Connected Client Commands.
+## Client Commands.
 
 These are the commands that are sent between the client and the server to coordinate info retrieval and connections.
 
 ---
 
-### !clientUpdate:
+### !client:
 
-This is sent by the client to get the list of other clients connected.
-
-This is also sent by the server each time a connection is created or destroyed.
+This is sent from the server to the client to say someone has connected.
 
 #### Parameters
 
-The command itself has no parameters but other parts of the whole exchange do. (see !client:).
+* name - the clients username
+* host - the clients hostname
+* uuid - the clients unique identifier
 
 #### Examples
 
 ##### Client > Server
 
 ```
-Client: !clientUpdate:
 Server: !client: name:"alice" host:"255.255.255.255" uuid:"123456-1234-1234-123456"
 Client: !success:
-Server: !client: name:"bob" host:"234.234.234.255" uuid:"654321-1234-1234-654321"
-Client: !success:
-Server: !success:
-Client: !success:
-```
-
-##### Server > Client
-
-```
-Server: !clientUpdate:
-Client: !Success:
-Server: !client: name:"alice" host:"255.255.255.255" uuid:"123456-1234-1234-123456"
-Client: !success:
-Server: !client: name:"bob" host:"234.234.234.255" uuid:"654321-1234-1234-654321"
-Client: !success:
-Server: !success:
-Client: !Success:
 ```
 
 ---
@@ -131,22 +113,48 @@ Server: !success: uuid:"654321-1234-1234-654321" name:bob host:"127.0.0.1"
 
 ---
 
-### !client:
+### !clientRemove:
 
-This is used by the server to signal the attached info is part of a client. it will expect a success message formt he client
+This is used by the server to signal a client has disconnected
 
 #### Parameters.
 
-* host - this is the hostname/ip of the client
-* name - the users name for the client
 * uuid- the uuid of the user
 
-expects success after each client sent.
+### Result.
+
+* expects a success with no params
 
 ```
-Server: !client uuid:654321-1234-1234-654321 name:bob host:"127.0.0.1"
+Server: !client uuid:654321-1234-1234-654321
 Client: !success:
 ```
+
+---
+
+### !clientupdate:
+
+this is sent from the client to the server to Trigger the server to send each client as if they ave just connected.
+
+#### Parameters.
+
+there are no parameters.
+
+#### Result.
+
+expects a success with no parameters.
+
+#### example
+
+```
+Client: !clientupdate:
+Server: !Success:
+// the server will then send a !client: for each connection
+```
+
+
+
+
 
 ---
 
