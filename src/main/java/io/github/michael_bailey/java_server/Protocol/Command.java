@@ -26,6 +26,8 @@ public class Command {
     // server commands
     public final static String UPDATE_CLIENTS = "!clientUpdate:";
     public final static String CLIENT = "!client:";
+    public final static String CLIENT_REMOVE = "!clientremove:";
+
     public final static String TEST = "!test:";
 
     // ptp commands

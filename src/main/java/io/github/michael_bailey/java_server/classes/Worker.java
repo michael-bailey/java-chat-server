@@ -5,6 +5,7 @@ import io.github.michael_bailey.java_server.delegates.IWorkerDelegate;
 
 import static io.github.michael_bailey.java_server.Protocol.Command.*;
 
+import java.net.SocketException;
 import java.util.*;
 
 import java.io.DataInputStream;
@@ -76,14 +77,25 @@ public class Worker implements Runnable {
         System.out.println("Worker: started thread");
         try {
             while (connected) {
-                // check the socket fo incomming data
+
+                // check the socket fo incoming data
                 while (in.available() > 0) {
                     System.out.println("incoming data");
                     var command = Command.valueOf(in.readUTF());
+                    System.out.println("command = " + command);
                     switch (command.command) {
                         case DISCONNECT:
                             this.disconnect();
                             break;
+
+                        case UPDATE_CLIENTS:
+                            System.out.println("updating clients");
+                            delegate.requestUpdateClients(this);
+                            out.writeUTF(new Command(SUCCESS).toString());
+                            break;
+
+                        case MESSAGE:
+                            System.out.println("not implemented");
                     }
                 }
 
@@ -93,28 +105,8 @@ public class Worker implements Runnable {
 
                     switch (command.command) {
 
-                        // todo look to see if this can be cleaned up
-                        // update the clients contacts
-                        case UPDATE_CLIENTS:
-                            System.out.println("updating clients");
-                            out.writeUTF(command.toString());
-                            if (!valueOf(in.readUTF()).command.equals(SUCCESS)) {
-                                sendQueue.clear();
-                                out.writeUTF(new Command(ERROR).toString());
-                            }
-                            break;
-
                         case CLIENT:
-                            System.out.println("worker {"+uuid+"}: sending a client");
-                            out.writeUTF(command.toString());
-                            if (!valueOf(in.readUTF()).command.equals(SUCCESS)) {
-                                sendQueue.clear();
-                                out.writeUTF(new Command(ERROR).toString());
-                            }
-                            break;
-
-                        case SUCCESS:
-                            System.out.println("worker {"+uuid+"}: sending success");
+                            System.out.println("worker {" + uuid + "}: sending a client");
                             out.writeUTF(command.toString());
                             if (!valueOf(in.readUTF()).command.equals(SUCCESS)) {
                                 sendQueue.clear();
@@ -124,9 +116,9 @@ public class Worker implements Runnable {
 
                         // tell the client to disconnect
                         case DISCONNECT:
-                            System.out.println("worker {"+uuid+"}: sending disconnect");
+                            System.out.println("worker {" + uuid + "}: sending disconnect");
                             out.writeUTF(new Command(DISCONNECT).toString());
-                            this.disconnect();
+                            sendQueue.clear();
                             break;
 
                         default:
@@ -138,6 +130,8 @@ public class Worker implements Runnable {
                 }
             }
             System.out.println("Worker: ended thread");
+        } catch (SocketException e) {
+            System.out.println("socket Closed");
         } catch (IOException e) {
             e.printStackTrace();
             this.connected = false;
@@ -155,6 +149,7 @@ public class Worker implements Runnable {
     public synchronized void disconnect() throws IOException {
         delegate.clientWillDisconnect(this);
         this.connected = false;
+        this.sendQueue.clear();
         out.writeUTF(SUCCESS);
         connection.close();
         delegate.clientDidDisconnect(this);
@@ -165,7 +160,7 @@ public class Worker implements Runnable {
 
     @Override
     public String toString() {
-        return "!Client:" +
+        return "!client:" +
                 " uuid:" + uuid +
                 " username:" + username +
                 " ipaddress:" + ipaddress;

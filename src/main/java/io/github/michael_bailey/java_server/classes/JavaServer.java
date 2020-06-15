@@ -123,17 +123,32 @@ public class JavaServer implements IWorkerDelegate {
     @Override
     public void clientDidConnect(Worker sender) {
         System.out.println("server: Client Connected");
+
+        delegate.clientWillConnect();
         this.clientMap.put(sender.getUUID(), sender);
         this.connectionThreadPool.execute(sender);
-        this.updateAllClients();
+
+        var clientCommand = valueOf(sender.toString());
+        this.clientMap.forEach((key, value) -> {
+            value.sendQueue.add(clientCommand);
+        });
+
         delegate.clientDidConnect();
     }
 
     @Override
     public void clientDidDisconnect(Worker sender) {
         System.out.println("server: Client disconnected");
+        delegate.clientWillDisconnect();
         this.clientMap.remove(sender.getUUID());
-        this.updateAllClients();
+
+        var a = new HashMap<String, String>();
+        a.put("uuid", sender.getUUID().toString());
+        var clientCommand = new Command(CLIENT_REMOVE, a);
+        this.clientMap.forEach((key, value) -> {
+            value.sendQueue.add(clientCommand);
+        });
+
         delegate.clientDidDisconnect();
     }
 
@@ -152,6 +167,8 @@ public class JavaServer implements IWorkerDelegate {
 
     @Override
     public void requestUpdateClients(Worker sender) {
-        sender.updateClientList(this.getWorkers());
+        this.clientMap.forEach((key, value) -> {
+            sender.sendQueue.add(valueOf(value.toString()));
+        });
     }
 }
