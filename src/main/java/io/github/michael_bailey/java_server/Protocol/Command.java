@@ -28,6 +28,8 @@ public class Command {
     public final static String CLIENT = "!client:";
     public final static String CLIENT_REMOVE = "!clientremove:";
 
+    public final static String SERVER = "!server:";
+
     public final static String TEST = "!test:";
 
     // ptp commands
