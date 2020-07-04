@@ -80,22 +80,23 @@ public class Worker implements Runnable {
 
                 // check the socket fo incoming data
                 while (in.available() > 0) {
-                    System.out.println("incoming data");
+                    log("new data");
                     var command = Command.valueOf(in.readUTF());
-                    System.out.println("command = " + command);
+                    log("command = " + command);
                     switch (command.command) {
                         case DISCONNECT:
+                            log("disconnecting");
                             this.disconnect();
                             break;
 
                         case UPDATE_CLIENTS:
-                            System.out.println("updating clients");
+                           log("updating clients");
                             delegate.requestUpdateClients(this);
                             out.writeUTF(new Command(SUCCESS).toString());
                             break;
 
                         case MESSAGE:
-                            System.out.println("not implemented");
+                            log("message received (not implemented)");
                     }
                 }
 
@@ -106,10 +107,13 @@ public class Worker implements Runnable {
                     switch (command.command) {
 
                         case CLIENT:
-                            System.out.println("worker {" + uuid + "}: sending a client");
+                            log("sending a client");
                             out.writeUTF(command.toString());
                             if (!valueOf(in.readUTF()).command.equals(SUCCESS)) {
+                                log("message received was not success");
+                                log("clearing send queue");
                                 sendQueue.clear();
+                                log("sending error");
                                 out.writeUTF(new Command(ERROR).toString());
                             }
                             break;
@@ -122,8 +126,9 @@ public class Worker implements Runnable {
                             break;
 
                         default:
-                            System.out.println("unknown command");
-                            System.out.println("command = " + command);
+                            log("unknown command");
+                            log("sending error");
+                            out.writeUTF(new Command(ERROR).toString());
                             break;
 
                     }
@@ -155,8 +160,19 @@ public class Worker implements Runnable {
         delegate.clientDidDisconnect(this);
     }
 
+    public void forceDisconnect() throws IOException {
+        this.connected = false;
+        connection.close();
+        this.sendQueue.clear();
+        delegate.clientDidDisconnect(this);
+    }
+
     public UUID getUUID() { return this.uuid; }
     public String getUsername() { return this.username; }
+
+    private void log(String message) {
+        System.out.println("worker {" + uuid + "}: " + message);
+    }
 
     @Override
     public String toString() {
