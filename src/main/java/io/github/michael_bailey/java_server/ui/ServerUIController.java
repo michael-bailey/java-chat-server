@@ -42,13 +42,14 @@ public class ServerUIController implements Initializable {
         });
         this.powerButton.setText("Start");
         this.serverStatusLabel.textProperty().bind(model.statusText);
-        this.listView.itemsProperty().bindBidirectional(this.model.workersProperty());
+        this.listView.itemsProperty().bind(this.model.workersProperty());
     }
 
     @FXML
     public void serverToggle(ActionEvent actionEvent) {
         if (model.isRunning()) {
             model.stop();
+            this.listView.itemsProperty().get().clear();
             this.powerButton.setText("Start");
         } else {
             model.start();
